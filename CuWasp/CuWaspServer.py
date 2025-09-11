@@ -19,11 +19,13 @@ UPDATE_FILE_SER = r".\payloads\chrome_service.py"
 
 PORT = 8080
 
-@app.route('/command', methods=['GET'])
-def command():
-    os.system("touch command_executed.txt")  # Simulate command execution
+# @app.route('/command', methods=['GET'])
+# def command():
+#     os.system("touch command_executed.txt")  # Simulate command execution
 
-    return "execute", 200
+#     return "execute", 200
+
+
 
 @app.route('/status', methods=['GET'])
 def status():
