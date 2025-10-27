@@ -1,0 +1,3 @@
+# Ignore the Dockerfile itself and any other files you don't want in the container
+Dockerfile
+.dockerignore
