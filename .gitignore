@@ -1,2 +1,8 @@
 .\CuWasp\exfiltrated_data.txt
 *.txt
+*.log
+*.conf
+*.exe
+*.pyc
+*.o
+.\Learning_Concepts\
