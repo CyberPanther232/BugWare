@@ -54,20 +54,14 @@ BugWare contains a comprehensive collection of cybersecurity tools, Proof of Con
   * **Larvae**: PowerShell-based delivery and staging scripts (`egg.ps1`, `hatch.ps1`).
   * **Dobsonfly**: Python-based payloads designed to run as services (e.g., `notepad-service.py`).
 
-### 6. Learning_Concepts
-
-* **Type**: Educational Resources
-* **Description**: A repository of notes, documentation, and research on core cybersecurity concepts.
-* **Topics**: Compliance standards (PCI DSS), security best practices, and theoretical attack/defense models.
-
-### 7. Logins
+### 6. Logins
 
 * **Language**: Python (Flask), HTML/JS
 * **Description**: specialized phishing templates and simulations for credential harvesting research.
 * **Modules**:
   * **fake_google**: A Flask application simulating a Google login page to demonstrate social engineering and credential interception techniques.
 
-### 8. RustyTick
+### 7. RustyTick
 
 * **Language**: Rust
 * **Description**: A fast, compiled data exfiltration and archival tool.
@@ -76,7 +70,7 @@ BugWare contains a comprehensive collection of cybersecurity tools, Proof of Con
   * **Archival**: Compresses targeted files into ZIP archives using Rust's `zip` crate.
   * **Exfiltration**: Transmits data over raw TCP sockets to a listening receiver (`rustyTickReceiver`).
 
-### 9. Spicebush
+### 8. Spicebush
 
 * **Language**: Python (Flask), SQLite
 * **Description**: A deliberately vulnerable e-commerce web application.
