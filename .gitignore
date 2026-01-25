@@ -6,3 +6,4 @@
 *.pyc
 *.o
 .\Learning_Concepts\
+*.vscode
