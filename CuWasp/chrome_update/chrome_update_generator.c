@@ -1,3 +1,18 @@
+// -------------------------------------------------------------------------
+// SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+// This script is part of the BugWare repository, a collection of security tools
+// and PoCs for learning about attack vectors.
+// DO NOT USE THIS FOR ILLEGAL PURPOSES.
+// -------------------------------------------------------------------------
+
+/*
+ * Program: Chrome Update Generator
+ * Description: C Program to generate a deceptive executable mimicking a Chrome Update.
+ * Author: CyberPanther232
+ * Suite: BugWare
+ * Version: 1.0
+ */
+
 #include <windows.h>
 #include <urlmon.h>
 #include <stdlib.h>

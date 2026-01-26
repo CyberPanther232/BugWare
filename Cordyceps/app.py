@@ -1,3 +1,18 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+"""
+Program: Cordyceps App
+Description: Flask-based delivery server for serving payloads and initial stagers.
+Author: CyberPanther232
+Suite: BugWare
+Version: 1.0
+"""
+
 from flask import Flask, send_file, render_template, request, jsonify
 from flask_cors import CORS
 import subprocess

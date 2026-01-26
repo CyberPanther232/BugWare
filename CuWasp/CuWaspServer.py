@@ -1,3 +1,10 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
 """
 Cuckoo's Wasp Server - A simple Flask server to simulate command and control (C2) operations.
 Serves update files, handles commands, and receives exfiltrated data.

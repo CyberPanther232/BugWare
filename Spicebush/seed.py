@@ -1,3 +1,18 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+"""
+Program: Spicebush Seed
+Description: Database seeding script for the Spicebush e-commerce simulation.
+Author: CyberPanther232
+Suite: BugWare
+Version: 1.0
+"""
+
 from app import create_app, db
 from app.models import Product
 

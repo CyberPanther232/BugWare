@@ -1,3 +1,19 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+"""
+Program: Cordyceps C2 Server - A simple Flask-based Command and Control server.
+Provides endpoints for command polling, response posting, and a web UI for interaction.
+Author: Cyberpanther-Dev / ChatGPT
+Suite: BugWare
+Created on: 2025-09-14
+Version: 1.0
+"""
+
 from flask import Flask, render_template, request, jsonify
 from queue import Queue
 import time

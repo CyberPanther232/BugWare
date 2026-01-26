@@ -3,6 +3,22 @@ CuWasp Cleaner Script
 This script removes the CuWasp keylogger and its associated files from the system.
 #>
 
+# -------------------------------------------------------------------------
+# SECURITY RESEARCH & EDUCATIONAL PURPOSES ONLY
+# This script is part of the BugWare repository, a collection of security tools
+# and PoCs for learning about attack vectors.
+# DO NOT USE THIS FOR ILLEGAL PURPOSES.
+# -------------------------------------------------------------------------
+
+<#
+.SYNOPSIS
+    CuWasp Cleaner
+.DESCRIPTION
+    Cleanup utility to remove artifacts left by CuWasp simulations.
+.AUTHOR
+    CyberPanther232
+#>
+
 # Remove registry entries
 
 Write-Host "Removing CuWasp keylogger and associated files..." -ForegroundColor Yellow
