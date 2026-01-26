@@ -6,7 +6,7 @@
 
 ## Overview
 
-BugWare contains a comprehensive collection of cybersecurity tools, Proof of Concepts (PoCs), and simulation environments. These projects are intended to demonstrate various attack vectors, command and control architectures, and vulnerability exploits in a controlled setting to aid in the understanding of defensive postures.
+BugWare contains a comprehensive collection of insect themed cybersecurity tools, Proof of Concepts (PoCs), and simulation environments. These projects are intended to demonstrate various attack vectors, command and control architectures, and vulnerability exploits in a controlled setting to aid in the understanding of defensive postures.
 
 ## Project Index
 

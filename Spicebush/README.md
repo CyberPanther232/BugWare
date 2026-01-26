@@ -1,5 +1,7 @@
 # Spicebush Shop (Flask)
 
+<img src="app/static/logo-light.svg" width="650" alt="Spicebush Shop Logo">
+
 A simple, generic e-commerce web app built with Python (Flask). It includes:
 
 - Product catalog and product details
@@ -7,7 +9,7 @@ A simple, generic e-commerce web app built with Python (Flask). It includes:
 - Checkout flow that creates orders in SQLite
 - Order confirmation page
 - Demo data seeding via route or script
- - Homepage with logo and theme toggle (light/dark)
+- Homepage with logo and theme toggle (light/dark)
 
 ## Quickstart (Windows PowerShell)
 
@@ -45,7 +47,7 @@ You can also visit `/admin/seed` once the server is running to seed demo product
 
 - SECRET_KEY: set via environment variable `SECRET_KEY` (default is a dev key)
 - DATABASE_URL: set to use a different DB (default: SQLite file in `instance/shop.sqlite`)
- - LOGO_URL: optional URL for the logo shown on the homepage. If not set, the app uses `static/logo.svg`.
+- LOGO_URL: optional URL for the logo shown on the homepage. If not set, the app uses `static/logo.svg`.
 
 ## Theming
 
