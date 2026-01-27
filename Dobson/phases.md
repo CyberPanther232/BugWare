@@ -2,9 +2,9 @@
 
 ### Diagram
 
-![1769383953690](image/phases/1769383953690.png)
+![1769476467786](image/phases/1769476467786.png)
 
-### Phase 1. Larvae - Stagers
+### Phase 1. Larvae - Stagers / Initial Access
 
 ##### MITRE ATT&CK Mapping
 
@@ -19,4 +19,17 @@ During this phase, there are two different MiTRE ATT&CK technics utilizes to gai
 
 ##### Phase Exploration
 
-This phase is all about socially engineering the victim to click and download an artifact known as "notepaddpp-8.2.2-installer.exe"
+This phase is all about socially engineering the victim to click and download an artifact known as "notepaddpp-8.2.2-installer.exe". This initial stager is what makes everything else happen within seconds! The executable is compiled from a PowerShell script using the PS2EXE program.
+
+```powershell
+ps2EXE -InputFile .\larvae\egg.ps1 -OutputFile .\notepaddpp-8.2.2-installer.exe
+```
+
+This PowerShell script reaches out to the malware server running to go program listed under the server folder. From here the server serves a PowerShell script called ""lay-eggs.ps1". This script is then executed into memory, and the starts phase 2!
+
+
+### Phase 2. Lay Eggs - Execution / Privilege Escalation
+
+##### MITRE ATT&CK Mapping
+
+During this phase, there are
