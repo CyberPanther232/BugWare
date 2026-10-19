@@ -20,3 +20,4 @@ If you identify any artifacts, binaries, or techniques from this repository bein
 *   **Do not** use this code for any illegal or malicious activities.
 *   The author takes no responsibility for any misuse of the information or code provided herein.
 *   Always run these samples in an isolated, sandboxed environment (e.g., a virtual machine with no network access to production systems).
+*   For educational use only.
