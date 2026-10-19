@@ -63,6 +63,8 @@ BugWare contains a comprehensive collection of insect themed cybersecurity tools
 
 ### [7. RustyTick](https://github.com/CyberPanther232/BugWare/tree/master/RustyTick "RustyTick Branch")
 
+- Work-In-Progress
+
 * **Language**: Rust
 * **Description**: A fast, compiled data exfiltration and archival tool.
 * **Key Features**:
@@ -73,7 +75,15 @@ BugWare contains a comprehensive collection of insect themed cybersecurity tools
 ### [8. Spicebush](https://github.com/CyberPanther232/BugWare/tree/master/Spicebush "Spicebush Branch")
 
 * **Language**: Python (Flask), SQLite
-* **Description**: A deliberately vulnerable e-commerce web application.
+* **Description**: WIP
+* **Purpose**: WIP
+* **Features**:
+  * WIP
+
+### [9. SpyderByte](https://github.com/CyberPanther232/BugWare/tree/master/spyderbyte "SpyderByte Branch")
+
+* **Language**: Python
+* **Description**: 
 * **Purpose**: Serves as a "Firing Range" for web application security testing.
 * **Features**:
   * Full shopping cart and checkout logic.

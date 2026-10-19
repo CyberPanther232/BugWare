@@ -16,6 +16,9 @@ Learning_Concepts\
 *.idb
 *Debug\
 *Release\
+spyderbyte/main.py
+spyderbyte/deauth.py
+spyderbyte/pyenv/*
 
 # Python
 __pycache__/
