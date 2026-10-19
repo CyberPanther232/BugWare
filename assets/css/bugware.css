@@ -574,8 +574,8 @@ img { max-width: 100%; height: auto; }
 .emblem-wide { aspect-ratio: auto; }
 .emblem-wide img { width: 100%; height: auto; }
 
-/* Brand mark: keep the square crop tidy at small sizes. */
-.brand-mark { object-fit: cover; object-position: 60% 50%; }
+/* Brand mark: the emblem is already square and centered. */
+.brand-mark { object-fit: cover; object-position: 50% 50%; }
 
 /* Hero fineprint under the CTAs. */
 .hero-fineprint {
