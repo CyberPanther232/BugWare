@@ -1,0 +1,105 @@
+# One entry per BugWare project. The home-page cards are built from this file.
+#
+# id       - short slug / folder name
+# name     - display name
+# path     - folder on GitHub (relative to the repo tree)
+# category - what kind of PoC it is
+# risk     - low | medium | high (how sensitive the technique is)
+# langs    - languages used
+# summary  - one-paragraph description
+# tags     - techniques demonstrated
+
+- id: dobson
+  name: Dobson
+  path: Dobson
+  category: C2 framework (multi-stage)
+  risk: high
+  langs: [Go, Python, PowerShell]
+  summary: >-
+    An advanced, modular command-and-control framework. A Go backend manages
+    agents ("Midges") over cryptographically secured channels (NaCl/Box), with
+    PowerShell stagers and Python service payloads.
+  tags: [C2, NaCl/Box crypto, Staging, Service persistence]
+
+- id: cuwasp
+  name: CuWasp
+  path: CuWasp
+  category: C2 simulation / social engineering
+  risk: high
+  langs: [Python, PowerShell, C]
+  summary: >-
+    "Cuckoo's Wasp" models a C2 that mimics legitimate software updates to study
+    update-spoofing lures, persistence via fake service updates, and exfiltration
+    back to a central server.
+  tags: [Update spoofing, Persistence, Exfiltration, Native code]
+
+- id: cordyceps
+  name: Cordyceps
+  path: Cordyceps
+  category: Malware delivery simulation
+  risk: high
+  langs: [Python, PowerShell]
+  summary: >-
+    A delivery-and-execution framework demonstrating payload staging over a web
+    server and execution techniques (regsvr32, PowerShell) used to study
+    allow-list bypass and defensive detection.
+  tags: [Delivery, regsvr32, PowerShell staging, Allow-list bypass]
+
+- id: c2
+  name: C2
+  path: C2
+  category: Command & control (foundational)
+  risk: medium
+  langs: [Python, Flask]
+  summary: >-
+    A foundational C2 server showing the core server-to-agent communication
+    pattern: REST endpoints for command retrieval, a command queue, and a
+    heartbeat to track active sessions.
+  tags: [REST API, Command queue, Heartbeat]
+
+- id: rustytick
+  name: RustyTick
+  path: RustyTick
+  category: Data exfiltration tool
+  risk: medium
+  langs: [Rust]
+  summary: >-
+    A compiled discovery-and-archival tool that walks the filesystem, zips
+    targeted files, and transmits archives over raw TCP to a listening receiver
+    — a study in exfiltration mechanics and detection.
+  tags: [Filesystem discovery, ZIP archival, Raw TCP]
+
+- id: spicebush
+  name: Spicebush
+  path: Spicebush
+  category: Deliberately vulnerable web app
+  risk: medium
+  langs: [Python, Flask, SQLite]
+  summary: >-
+    A vulnerable e-commerce "firing range" with full cart, checkout and session
+    logic — a practice target for SQL injection, XSS and business-logic flaws.
+  tags: [SQLi target, XSS target, Logic flaws, Training range]
+
+- id: cve-2025-54100
+  name: CVE-2025-54100
+  path: CVE-2025-54100
+  category: Vulnerability research / PoC
+  risk: medium
+  langs: [JavaScript]
+  summary: >-
+    A reproduction lab for a specific vulnerability class, including scripts that
+    demonstrate the associated cross-site scripting (XSS) vector for study and
+    detection.
+  tags: [CVE reproduction, XSS, PoC]
+
+- id: logins
+  name: Logins
+  path: logins
+  category: Phishing / credential-harvesting research
+  risk: high
+  langs: [Python, Flask, HTML/JS]
+  summary: >-
+    Templates that simulate login pages (e.g. a mock Google sign-in) to study
+    social-engineering and credential-interception techniques and how defenders
+    can detect them.
+  tags: [Phishing simulation, Credential interception, Social engineering]

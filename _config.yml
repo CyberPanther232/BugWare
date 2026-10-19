@@ -1,0 +1,72 @@
+title: BugWare
+tagline: Ethical Hacking & Security Research
+description: >-
+  BugWare is an insect-themed collection of proof-of-concept offensive-security
+  tools and deliberately vulnerable targets, built for ethical, academic and
+  defensive research. No malicious use. No pre-built binaries.
+author: CyberPanther232
+
+# Served from the custom domain set in the repo's Pages settings, so the site
+# lives at the domain root and baseurl is empty. Without a custom domain this
+# would be url: https://cyberpanther232.github.io and baseurl: /BugWare
+url: https://bugware.cyberpanther-dev.space
+baseurl: ""
+
+# Brand links shown in the header and footer.
+links:
+  website: https://www.cyberpanther-dev.space
+  github: https://github.com/CyberPanther232
+  repo: https://github.com/CyberPanther232/BugWare
+  linkedin: https://www.linkedin.com/in/hunter-kinney/
+
+# The site uses its own BugWare layout (_layouts/default.html), so no remote
+# theme is set.
+
+# These are on by default on GitHub Pages; listed so the behavior is explicit.
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-relative-links
+  - jekyll-titles-from-headings
+  - jekyll-seo-tag
+
+relative_links:
+  enabled: true
+
+titles_from_headings:
+  strip_title: false
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Every page gets the BugWare layout.
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
+
+# Keep source code, tooling and working files off the published site. Only the
+# landing page and its assets are built; the actual PoC code stays on GitHub.
+exclude:
+  - README.md
+  - SECURITY.md
+  - Update-Artifacts.ps1
+  - C2/
+  - Cordyceps/
+  - CuWasp/
+  - CVE-2025-54100/
+  - Dobson/
+  - logins/
+  - RustyTick/
+  - Spicebush/
+  - scripts/
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - "**/*.exe"
+  - "**/*.dll"
+  - "**/*.ps1"
+  - "**/*.py"
+  - "**/*.c"
+  - "**/*.go"
+  - "**/*.rs"

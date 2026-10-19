@@ -1,0 +1,29 @@
+# Blocks committed executables and other prohibited binaries from entering the
+# repository, to keep BugWare within GitHub's Acceptable Use Policies and its
+# own "source and PoC only, no pre-built binaries" rule.
+#
+# Runs on every push and pull request. The actual logic lives in
+# scripts/check-compliance.sh so it can also be run locally or as a git hook.
+name: Compliance check
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan for prohibited binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan tracked files
+        run: |
+          chmod +x scripts/check-compliance.sh
+          ./scripts/check-compliance.sh

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#120406" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbf4f4" media="(prefers-color-scheme: light)">
+  <script>
+    // Apply a saved light/dark choice before first paint; otherwise follow the OS.
+    try { var t = localStorage.getItem("cp-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  {% seo %}
+  <link rel="icon" href="{{ '/assets/img/bugware-square.jpg' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/bugware.css' | relative_url }}">
+</head>
+<body class="{% if page.url == '/' %}is-home{% else %}is-doc{% endif %}">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{ '/' | relative_url }}">
+        <img class="brand-mark" src="{{ '/assets/img/bugware-square.jpg' | relative_url }}" alt="" width="40" height="40">
+        <span class="brand-text">
+          <span class="brand-name">Bug<b>Ware</b></span>
+          <span class="brand-sub"><i class="live-dot" aria-hidden="true"></i>{{ site.tagline }}</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="{{ '/#projects' | relative_url }}">Projects</a>
+        <a href="{{ '/#scope' | relative_url }}">Scope &amp; Ethics</a>
+        <a href="{{ site.links.repo }}">GitHub</a>
+        <a class="nav-cta" href="{{ site.links.website }}">Portfolio</a>
+        <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    {% if page.analysis %}
+      {% assign a = site.data.analyses | where: "id", page.analysis | first %}
+      <div class="wrap doc-layout">
+        <div class="doc-main">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="{{ '/' | relative_url }}">~/bugware</a><span>/</span><span>{{ a.id }}</span>
+          </nav>
+          <div class="doc-meta">
+            <span class="threat threat-{{ a.threat }}">{{ a.threat }} threat</span>
+            <span class="chip">{{ a.category }}</span>
+            <span class="chip mono">{{ a.date | date: "%Y-%m-%d" }}</span>
+          </div>
+          {% if a.docs.size > 1 %}
+          <div class="doc-tabs" role="tablist">
+            {% for d in a.docs %}
+              {% assign d_url = d.path | replace: ".md", ".html" | prepend: "/" %}
+              <a role="tab" href="{{ d_url | relative_url }}"{% if page.path == d.path %} aria-selected="true" class="active"{% endif %}>{{ d.label }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <article class="doc-body">
+            <div class="doc-status mono" aria-label="Report status">
+              <span><i class="live-dot" aria-hidden="true"></i>REPORT // {{ a.name | upcase }}</span>
+              <span>TLP:CLEAR</span>
+            </div>
+            {% unless content contains "<h1" %}<h1>{{ page.title }}</h1>{% endunless %}
+            {{ content }}
+          </article>
+        </div>
+        <aside class="toc" aria-label="On this page">
+          <div class="toc-inner">
+            <p class="toc-title">On this page</p>
+            <ol id="toc-list"></ol>
+          </div>
+        </aside>
+      </div>
+    {% else %}
+      {{ content }}
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand">
+        <img src="{{ '/assets/img/bugware-square.jpg' | relative_url }}" alt="" width="28" height="28">
+        <span>BugWare &middot; a CyberPanther research lab</span>
+      </div>
+      <nav class="footer-links" aria-label="Elsewhere">
+        <a href="{{ site.links.website }}">cyberpanther-dev.space</a>
+        <a href="{{ site.links.github }}">GitHub</a>
+        <a href="{{ site.links.linkedin }}">LinkedIn</a>
+      </nav>
+      <p class="footer-note">Proof-of-concept code for ethical, academic and defensive security research only. No pre-built binaries are hosted here. Run everything in an isolated lab. Never use it against systems you do not own or lack written permission to test.</p>
+    </div>
+  </footer>
+
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+</body>
+</html>

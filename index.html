@@ -1,0 +1,147 @@
+---
+layout: default
+title: BugWare — Ethical Hacking & Security Research
+---
+{% assign repo = site.links.repo %}
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Offensive-security research &middot; {{ site.author }}</span>
+        <p class="prompt hero-prompt"><span class="prompt-user">bugware@lab</span>:<span class="prompt-path">~/swarm</span>$ ./bugware --build --break --defend</p>
+        <h1 class="headline" aria-label="Build the technique. Break it in the lab. Defend against it.">
+          <span class="glitch" data-text="Build the technique." aria-hidden="true">Build the technique.</span>
+          <span class="glitch" data-text="Break it in the lab." aria-hidden="true">Break it in the lab.</span>
+          <span class="glitch accent" data-text="Defend against it." aria-hidden="true">Defend against it.</span><span class="cursor" aria-hidden="true"></span>
+        </h1>
+        <p class="lede">
+          BugWare is an insect-themed collection of proof-of-concept offensive-security tools, C2
+          simulations and deliberately vulnerable targets. Everything here exists to <b>understand
+          attacks so we can detect and defend against them</b> &mdash; built for ethical, academic
+          and defensive research.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projects">Browse projects</a>
+          <a class="btn" href="{{ repo }}">View on GitHub &rarr;</a>
+        </div>
+        <p class="hero-fineprint mono">// PoC only &middot; no pre-built binaries &middot; isolated-lab use &middot; authorized targets only</p>
+      </div>
+      <figure class="hud hud-wide">
+        <span class="hud-label hud-tl">REPO // BUGWARE</span>
+        <span class="hud-label hud-br">STATUS // <b>LAB-ONLY</b></span>
+        <div class="emblem-card emblem-wide">
+          <img src="{{ '/assets/img/bugware-banner.jpg' | relative_url }}" alt="BugWare emblem: a cyber panther beside a hornet-and-shield badge reading BugWare Programs Repository, Ethical Hacking & Security Research" width="1600" height="873">
+        </div>
+      </figure>
+    </div>
+
+    <div class="terminal" role="region" aria-label="Repository summary">
+      <div class="terminal-bar">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="terminal-title">bugware@lab: ~/swarm</span>
+      </div>
+      <div class="terminal-body">
+        <p class="prompt">$ ls ./projects</p>
+        <ul class="term-list">
+          {% for p in site.data.projects %}
+            <li>
+              <span class="term-sev sev-{{ p.risk }}">[{{ p.risk | upcase }}]</span>
+              <a href="{{ repo }}/tree/master/{{ p.path }}">{{ p.id }}/</a>
+              <span class="term-dim term-cat">{{ p.category }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        <p class="prompt">$ cat manifest.json</p>
+        <dl class="term-stats">
+          <div><dt>projects</dt><dd>{{ site.data.projects.size }}</dd></div>
+          <div><dt>purpose</dt><dd>research</dd></div>
+          <div><dt>prebuilt_binaries</dt><dd>0</dd></div>
+          <div><dt>intended_use</dt><dd>authorized</dd></div>
+          <div><dt>license</dt><dd>educational</dd></div>
+        </dl>
+        <p class="prompt">$ <span class="cursor" aria-hidden="true"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="prompt">$ ls -t ./projects --long</p>
+        <h2>Projects</h2>
+      </div>
+      <p>Each links to its source on GitHub. Risk tags reflect how sensitive the technique is.</p>
+    </div>
+    <div class="cards">
+      {% for p in site.data.projects %}
+        <article class="card">
+          <div class="card-top">
+            <span class="case-id">{{ p.langs | join: " · " }}</span>
+            <span class="threat threat-{{ p.risk }}">{{ p.risk }}</span>
+          </div>
+          <h3><a href="{{ repo }}/tree/master/{{ p.path }}">{{ p.name }}</a></h3>
+          <div class="card-cat">{{ p.category }}</div>
+          <p>{{ p.summary }}</p>
+          <div class="tags">
+            {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+          </div>
+          <div class="card-links">
+            <a href="{{ repo }}/tree/master/{{ p.path }}">Source &rarr;</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="scope">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="prompt">$ cat scope-and-ethics.md</p>
+        <h2>Scope &amp; Ethics</h2>
+      </div>
+      <p>Why this exists and the boundaries it is built within.</p>
+    </div>
+    <div class="method-grid">
+      <div class="method">
+        <div class="method-num">01 / PURPOSE</div>
+        <h3>Defensive by intent</h3>
+        <p>Every project reproduces an attacker technique so that defenders, students and researchers can study how it works and build detections against it.</p>
+      </div>
+      <div class="method">
+        <div class="method-num">02 / BOUNDARIES</div>
+        <h3>Authorized use only</h3>
+        <p>Use these tools only against systems you own or have explicit written permission to test. Never against third parties or production systems.</p>
+      </div>
+      <div class="method">
+        <div class="method-num">03 / CONTAINMENT</div>
+        <h3>Isolated lab</h3>
+        <p>Run everything in a sandboxed VM with no network path to anything you care about. No pre-built binaries are published; nothing here is drop-and-run.</p>
+      </div>
+      <div class="method">
+        <div class="method-num">04 / COMPLIANCE</div>
+        <h3>Within GitHub's rules</h3>
+        <p>The repository ships with clear disclaimers and a <a href="{{ repo }}/blob/master/SECURITY.md">security policy</a>, and a CI check blocks committed executables and other prohibited artifacts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="notice">
+      <strong>! Disclaimer</strong>
+      <p>
+        This repository and site are for ethical, academic and security-research purposes only. The
+        projects are proof-of-concept demonstrations created to advance cybersecurity education and
+        defense. <b>Do not</b> use this software for illegal or malicious purposes, and do not run it
+        against systems you do not own or lack explicit permission to test. The author accepts no
+        responsibility for misuse. Always work in an isolated, sandboxed environment.
+      </p>
+    </div>
+  </div>
+</section>
