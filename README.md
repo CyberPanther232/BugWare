@@ -1,6 +1,8 @@
 # BugWare
 
-![BugWare Logo](Bugware_Repo_Logo.png)
+<p align="center">
+  <img src="assets/img/bugware-logo-banner.jpg" alt="BugWare — Security Research &amp; PoC" width="760">
+</p>
 
 **Disclaimer: This repository is for ethical, academic, and security research purposes only. The projects and code contained herein are Proof of Concept (PoC) demonstrations designed for the progression of cybersecurity education. Do not use this software for illegal or malicious purposes.**
 

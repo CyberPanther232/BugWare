@@ -574,8 +574,8 @@ img { max-width: 100%; height: auto; }
 .emblem-wide { aspect-ratio: auto; }
 .emblem-wide img { width: 100%; height: auto; }
 
-/* Brand mark: the emblem is already square and centered. */
-.brand-mark { object-fit: cover; object-position: 50% 50%; }
+/* Brand mark: square hornet emblem, rounded. */
+.brand-mark { object-fit: cover; object-position: 50% 45%; border-radius: 7px; }
 
 /* Hero fineprint under the CTAs. */
 .hero-fineprint {
