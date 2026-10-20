@@ -73,23 +73,29 @@ title: BugWare — Ethical Hacking & Security Research
         <p class="prompt">$ ls -t ./projects --long</p>
         <h2>Projects</h2>
       </div>
-      <p>Each links to its source on GitHub. Risk tags reflect how sensitive the technique is.</p>
+      <p>Click a project to read its README here. Risk tags reflect how sensitive the technique is.</p>
     </div>
-    <div class="cards">
+    <div class="cards" data-repo="{{ repo | remove: 'https://github.com/' }}">
       {% for p in site.data.projects %}
-        <article class="card">
+        <article class="card card-open"
+                 role="button" tabindex="0"
+                 data-dir="{{ p.path }}"
+                 data-name="{{ p.name }}"
+                 data-github="{{ repo }}/tree/master/{{ p.path }}"
+                 aria-label="Read the README for {{ p.name }}">
           <div class="card-top">
             <span class="case-id">{{ p.langs | join: " · " }}</span>
             <span class="threat threat-{{ p.risk }}">{{ p.risk }}</span>
           </div>
-          <h3><a href="{{ repo }}/tree/master/{{ p.path }}">{{ p.name }}</a></h3>
+          <h3>{{ p.name }}</h3>
           <div class="card-cat">{{ p.category }}</div>
           <p>{{ p.summary }}</p>
           <div class="tags">
             {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
           </div>
           <div class="card-links">
-            <a href="{{ repo }}/tree/master/{{ p.path }}">Source &rarr;</a>
+            <span class="card-readme-cue">Read README &rarr;</span>
+            <a href="{{ repo }}/tree/master/{{ p.path }}" data-stop>View on GitHub &#8599;</a>
           </div>
         </article>
       {% endfor %}

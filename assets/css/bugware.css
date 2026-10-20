@@ -587,3 +587,59 @@ img { max-width: 100%; height: auto; }
 
 /* The HUD "status" accent reads better in the theme's warm tone than low-green. */
 .hud-label b { color: var(--accent-strong); }
+
+/* ---------- Clickable project cards ---------- */
+.card-open { cursor: pointer; }
+.card-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.card-links { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.card-readme-cue { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+.card-open:hover .card-readme-cue { text-decoration: underline; }
+
+/* ---------- README modal ---------- */
+.readme-modal {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.readme-modal[hidden] { display: none; }
+.readme-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(10, 2, 4, 0.72);
+  backdrop-filter: blur(3px);
+}
+.readme-dialog {
+  position: relative;
+  display: flex; flex-direction: column;
+  width: min(860px, 100%); max-height: min(84vh, 900px);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  box-shadow: var(--shadow), var(--glow-box);
+  overflow: hidden;
+}
+.readme-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.readme-crumbs { display: flex; align-items: center; gap: 8px; color: var(--accent-strong); font-weight: 700; letter-spacing: 0.02em; }
+.readme-close {
+  appearance: none; border: 1px solid var(--border-strong); background: transparent;
+  color: var(--text); font-size: 1.3rem; line-height: 1; cursor: pointer;
+  width: 34px; height: 34px; border-radius: 8px; flex: none;
+}
+.readme-close:hover { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); }
+.readme-body {
+  padding: 22px 26px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.readme-body.doc-body > :first-child { margin-top: 0; }
+.readme-state { color: var(--muted); font-family: "JetBrains Mono", monospace; }
+.readme-foot {
+  display: flex; justify-content: flex-end;
+  padding: 14px 18px; border-top: 1px solid var(--border); background: var(--surface-2);
+}
+@media (max-width: 560px) {
+  .readme-modal { padding: 0; }
+  .readme-dialog { max-height: 100vh; height: 100%; border-radius: 0; border: 0; width: 100%; }
+}

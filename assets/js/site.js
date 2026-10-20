@@ -24,6 +24,75 @@
     labelToggle();
   }
 
+  // ---- Project README modal (homepage) ----
+  (function () {
+    var cardsWrap = document.querySelector(".cards[data-repo]");
+    var modal = document.getElementById("readme-modal");
+    if (!cardsWrap || !modal) return;
+    var repo = cardsWrap.getAttribute("data-repo");
+    var titleEl = document.getElementById("readme-title");
+    var bodyEl = document.getElementById("readme-body");
+    var ghEl = document.getElementById("readme-gh");
+    var closeBtn = modal.querySelector(".readme-close");
+    var lastFocus = null;
+
+    function setState(msg) {
+      bodyEl.innerHTML = '<p class="readme-state"></p>';
+      bodyEl.firstChild.textContent = msg;
+    }
+
+    function fetchReadme(dir) {
+      var key = "bw-readme-" + repo + "-" + dir;
+      try { var c = sessionStorage.getItem(key); if (c !== null) return Promise.resolve(c); } catch (e) {}
+      return fetch("https://api.github.com/repos/" + repo + "/readme/" + encodeURIComponent(dir), {
+        headers: { "Accept": "application/vnd.github.html" }
+      }).then(function (res) {
+        if (res.status === 404) { try { sessionStorage.setItem(key, ""); } catch (e) {} return ""; }
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text().then(function (html) {
+          try { sessionStorage.setItem(key, html); } catch (e) {}
+          return html;
+        });
+      });
+    }
+
+    function openModal(card) {
+      lastFocus = document.activeElement;
+      titleEl.textContent = card.getAttribute("data-name") + " / README";
+      ghEl.href = card.getAttribute("data-github");
+      setState("Loading README…");
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+      fetchReadme(card.getAttribute("data-dir")).then(function (html) {
+        if (html) { bodyEl.innerHTML = html; bodyEl.scrollTop = 0; }
+        else { setState("This project has no standalone README yet — use the GitHub link below to browse its source."); }
+      }).catch(function () {
+        setState("Couldn’t load the README (GitHub may be rate-limiting). Open it on GitHub with the link below.");
+      });
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    cardsWrap.addEventListener("click", function (e) {
+      if (e.target.closest("[data-stop]")) return; // let the GitHub link navigate
+      var card = e.target.closest(".card-open");
+      if (card) openModal(card);
+    });
+    cardsWrap.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (e.target.closest("a")) return;
+      var card = e.target.closest(".card-open");
+      if (card) { e.preventDefault(); openModal(card); }
+    });
+    modal.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeModal(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) closeModal(); });
+  })();
+
   var body = document.querySelector(".doc-body");
   if (!body) return;
 

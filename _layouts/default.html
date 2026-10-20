@@ -83,6 +83,22 @@
     {% endif %}
   </main>
 
+  <div class="readme-modal" id="readme-modal" hidden>
+    <div class="readme-backdrop" data-close></div>
+    <div class="readme-dialog" role="dialog" aria-modal="true" aria-labelledby="readme-title">
+      <div class="readme-head">
+        <div class="readme-crumbs mono"><span class="live-dot" aria-hidden="true"></span><span id="readme-title">README</span></div>
+        <button class="readme-close" type="button" aria-label="Close" data-close>&times;</button>
+      </div>
+      <div class="readme-body doc-body" id="readme-body">
+        <p class="readme-state">Loading&hellip;</p>
+      </div>
+      <div class="readme-foot">
+        <a class="btn btn-primary readme-gh" id="readme-gh" href="#" target="_blank" rel="noopener">View on GitHub &#8599;</a>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="wrap footer-inner">
       <div class="footer-brand">
