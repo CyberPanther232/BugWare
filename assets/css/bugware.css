@@ -564,15 +564,7 @@ img { max-width: 100%; height: auto; }
   .term-list li { gap: 4px 10px; }
 }
 
-/* ---------- BugWare: wide-banner hero overrides ---------- */
-
-/* The BugWare logo is a wide banner, so stack the hero and give it full width. */
-@media (min-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 28px; }
-}
-.hud-wide { max-width: 760px; }
-.emblem-wide { aspect-ratio: auto; }
-.emblem-wide img { width: 100%; height: auto; }
+/* ---------- BugWare: hero / brand ---------- */
 
 /* Brand mark: square hornet emblem, rounded. */
 .brand-mark { object-fit: cover; object-position: 50% 45%; border-radius: 7px; }
